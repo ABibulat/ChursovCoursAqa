@@ -1,9 +1,11 @@
 plugins {
     id 'java'
+    id("io.qameta.allure") version "2.12.0"
 }
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
+
 
 repositories {
     mavenCentral()
@@ -17,4 +19,22 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
+tasks.register ("myTags", Test.class) {
+    String fullTags = System.getProperty("customTags")
+    if (fullTags != null) {
+        String[] tags = System.getProperty("customTags").split(",")
+        useJUnitPlatform {
+            for (String tag : tags) {
+                includeTags.add(tag)
+            }
+        }
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
 }
